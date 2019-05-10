@@ -1,0 +1,3 @@
+Compression of FASTA files using methods like Huffman coding and autoencoders.
+Inputs a FASTA file and outputs a encoded one. This can also be used as a standalone
+package for your computational biology scripts if you ever wish to encode/ decode data.
