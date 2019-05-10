@@ -15,7 +15,7 @@ def encode(data,variable = True,verbose = False, bestfit = False, cache = 0, fla
 	Outputs as Int of encoded seq
 	'''
 	if verbose:
-		print("[#] HUFFMAN",end=" ")
+		print("[ ] Huffman Encoding starting...",end=" ")
 		if variable: print("[Variable]")
 		else: print("[Fixed]",)
 	encode_start = time.time()
@@ -53,15 +53,15 @@ def encode(data,variable = True,verbose = False, bestfit = False, cache = 0, fla
 		key = dict()
 		heapq.heapify(htree)
 		while len(htree)>1:
-			lo = heapq.heappop(htree)
+			left = heapq.heappop(htree)
 			#print("lo:" ,lo)
-			hi = heapq.heappop(htree)
-			for _ in lo[1]:
+			right = heapq.heappop(htree)
+			for _ in left[1]:
 				#print('_ in lo: ',_)
 				key[_] = '0' + key.get(_,"")
-			for _ in hi[1]:
+			for _ in right[1]:
 				key[_]= '1' + key.get(_,"")
-			heapq.heappush(htree,(lo[0]+hi[0],lo[1]+hi[1]))       		
+			heapq.heappush(htree,(left[0]+right[0],left[1]+right[1]))       		
 
 	else:
 		nitems = len(corp)
@@ -81,9 +81,10 @@ def encode(data,variable = True,verbose = False, bestfit = False, cache = 0, fla
 	for char in data:
 		encoded+=key[char]
 	rem = len(encoded)%8
+	key['rem'] = rem
 	for _ in range(rem):
 		encoded+='0'
-	encoded = 24*'1'+encoded
+	encoded = 8*'1'+encoded
 	space_uncompressed = (len(data))
 	space_compressed = len(encoded)//8
 	if verbose: print("[#] Completed in %fs" %(time.time()-ctime))
@@ -119,6 +120,7 @@ def encode(data,variable = True,verbose = False, bestfit = False, cache = 0, fla
 			
 	
 	if not bestfit and verbose: print('[#] Huffmann Encoding Complete!\n'+'-'*30)
+
 	return encoded,key
 	
 
@@ -127,10 +129,31 @@ def decode(data,key,verbose=False):
 	Input data as Int of encoded seq
 	Returns data as string output
 	'''
+	if verbose: print("[ ] Huffman Decoding starting")
+	decode_time = time.time()
 	decoded = str()
-	if verbose : print("Converting to binary...")
+	rem = key['rem']
+	key = dict([(key[_],_) for _ in key.keys()])
+	ctime = time.time()
+	if verbose : print("[ ] Converting to binary...")
 	b = "{0:b}".format(data)
-	print(b)
+	b=b[8:]
+	if rem !=0: b=b[:-rem]
+	if verbose : print("[#] Completed in %fs" %(time.time()-ctime))
+	
+	if verbose: print("[ ] Decoding file...")
+	ctime = time.time()
+	i=0
+	while i <len(b):
+		for j in range(i,len(b)+1):
+			if b[i:j] in key.keys():
+				decoded+=key[b[i:j]]
+				i=j
+				break
+	if verbose:	print("[#] Completed in %fs" %(time.time()-ctime))
+	if verbose: print("-"*30)
+	if verbose: print("[#] Huffman Decoding Complete!\n[#] Decoding time taken: %fs"%(time.time()-decode_time))
+	if verbose: print("-"*30)
 	return decoded
 
 
