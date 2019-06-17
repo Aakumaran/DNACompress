@@ -61,7 +61,9 @@ def encode(data,variable = True,verbose = False, bestfit = False, cache = 0, fla
 				key[_] = '0' + key.get(_,"")
 			for _ in right[1]:
 				key[_]= '1' + key.get(_,"")
-			heapq.heappush(htree,(left[0]+right[0],left[1]+right[1]))       		
+			heapq.heappush(htree,(left[0]+right[0],left[1]+right[1]))  
+		# for x in key:
+		# 	print(x,key[x])    		
 
 	else:
 		nitems = len(corp)
@@ -72,7 +74,7 @@ def encode(data,variable = True,verbose = False, bestfit = False, cache = 0, fla
 			num = str(bin(count))[2:]
 			key[_[0]] = (powi-len(num))*'0'+num
 			count+=1
-		print(key)
+		# print(key)
 
 	
 	buff = str()
@@ -158,3 +160,5 @@ def decode(data,key,verbose=False):
 
 
 
+
+# encode("streets are stone stars are not")
